@@ -38,7 +38,7 @@ while True:
     # Map the brightness range to the screen brightness range
     brightness_range = high_brightness - low_brightness
     brightness_offset = low_brightness
-    screen_brightness = int((avg_brightness - brightness_offset) * (255 / brightness_range))
+    screen_brightness = int(((avg_brightness - brightness_offset) / brightness_range) * 60 + 20)
 
     # Adjust the screen brightness within the valid range (0-100)
     screen_brightness = max(min(screen_brightness, 100), 0)
