@@ -1,29 +1,60 @@
 import cv2
 import numpy as np
 import screen_brightness_control as sbc
+import os
 
 # Initialize the camera
 cap = cv2.VideoCapture(0)
 
 # Calibration settings
-low_brightness = 50  # minimum brightness value
-high_brightness = 255  # maximum brightness value
+calibration_file = 'brightness_calibration.txt'
+default_low_brightness = 50  # default minimum brightness value
+default_high_brightness = 255  # default maximum brightness value
 
-# Perform low brightness calibration
-print('Please aim the camera at a low-light environment and press ENTER to calibrate.')
-input()
-_, low_frame = cap.read()
-low_gray = cv2.cvtColor(low_frame, cv2.COLOR_BGR2GRAY)
-low_brightness = np.mean(low_gray)
-print('Low brightness calibrated to:', low_brightness)
+# Create a default calibration file if it doesn't exist
+if not os.path.exists(calibration_file):
+    with open(calibration_file, 'w') as f:
+        f.write("# Calibration data for Adaptive Brightness Control\n")
+        f.write(f"low_brightness = {default_low_brightness}\n")
+        f.write(f"high_brightness = {default_high_brightness}\n")
+    print('Default calibration data saved.')
 
-# Perform high brightness calibration
-print('Please aim the camera at a well-lit environment and press ENTER to calibrate.')
-input()
-_, high_frame = cap.read()
-high_gray = cv2.cvtColor(high_frame, cv2.COLOR_BGR2GRAY)
-high_brightness = np.mean(high_gray)
-print('High brightness calibrated to:', high_brightness)
+# Load saved calibration data
+with open(calibration_file, 'r') as f:
+    lines = f.readlines()
+    for line in lines:
+        if line.startswith("low_brightness"):
+            low_brightness = float(line.split('=')[1].strip())
+        elif line.startswith("high_brightness"):
+            high_brightness = float(line.split('=')[1].strip())
+    print('Calibration data loaded.')
+
+# Ask the user if they want to use the previous data or recalibrate
+use_previous = input('Do you want to use previous calibration data? (y/n): ').strip().lower() == 'y'
+
+if not use_previous:
+    # Perform low brightness calibration
+    print('Please aim the camera at a low-light environment and press ENTER to calibrate.')
+    input()
+    _, low_frame = cap.read()
+    low_gray = cv2.cvtColor(low_frame, cv2.COLOR_BGR2GRAY)
+    low_brightness = np.mean(low_gray)
+    print('Low brightness calibrated to:', low_brightness)
+
+    # Perform high brightness calibration
+    print('Please aim the camera at a well-lit environment and press ENTER to calibrate.')
+    input()
+    _, high_frame = cap.read()
+    high_gray = cv2.cvtColor(high_frame, cv2.COLOR_BGR2GRAY)
+    high_brightness = np.mean(high_gray)
+    print('High brightness calibrated to:', high_brightness)
+
+    # Save calibration data
+    with open(calibration_file, 'w') as f:
+        f.write("# Calibration data for Adaptive Brightness Control\n")
+        f.write(f"low_brightness = {low_brightness}\n")
+        f.write(f"high_brightness = {high_brightness}\n")
+        print('Calibration data saved.')
 
 while True:
     # Read the camera frame
