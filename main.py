@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 # Set up logging
-log_file = 'log.txt'
+log_file = "log.txt"
 logging.basicConfig(
     filename=log_file, level=logging.INFO, format="[%(asctime)s]: %(message)s"
 )
@@ -121,6 +121,17 @@ try:
             frame,
             f"Screen Brightness: {screen_brightness}",
             (10, 30),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.8,
+            (0, 0, 255),
+            2,
+        )
+
+        # Display the 'Press q to exit' instruction
+        cv2.putText(
+            frame,
+            "Press q to exit",
+            (10, 60),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.8,
             (0, 0, 255),
