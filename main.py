@@ -5,15 +5,14 @@ import os
 import logging
 from datetime import datetime
 
-
 # Set up logging
 log_file = "log.txt"
 logging.basicConfig(
     filename=log_file, level=logging.INFO, format="[%(asctime)s]: %(message)s"
 )
 
-
 def clear_large_log_file(log_path, max_size_in_bytes):
+    """Clear the log file if its size exceeds the specified limit."""
     try:
         log_size = os.path.getsize(log_path)
         if log_size > max_size_in_bytes:
@@ -21,7 +20,6 @@ def clear_large_log_file(log_path, max_size_in_bytes):
             logging.info("Log file cleared due to large size")
     except Exception as e:
         logging.error("Error while clearing log file: %s", str(e))
-
 
 # Clear log file if its size is larger than 1 MB
 clear_large_log_file(log_file, 1024 * 1024)
@@ -98,6 +96,9 @@ try:
     while True:
         # Read the camera frame
         ret, frame = cap.read()
+        if not ret:
+            logging.error("Failed to capture frame from camera")
+            break
 
         # Convert the frame to grayscale
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
