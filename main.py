@@ -110,7 +110,7 @@ try:
         brightness_range = high_brightness - low_brightness
         brightness_offset = low_brightness
         screen_brightness = int(
-            ((avg_brightness - brightness_offset) / brightness_range) * 60 + 20
+            ((avg_brightness - brightness_offset) / brightness_range) * 100
         )
 
         # Adjust the screen brightness within the valid range (0-100)
