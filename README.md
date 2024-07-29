@@ -5,7 +5,7 @@ This Python application adjusts the screen brightness based on the average brigh
 ## Installation
 
 1. Clone the repository or download the source code.
-2. Install the required Python modules using `pip`: `pip install opencv-python numpy screen_brightness_control`
+2. Install the required Python modules using `pip`: `pip install -r requirements.txt`
 3. Run the application using the following command: `python main.py`
 
 
