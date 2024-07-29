@@ -141,35 +141,6 @@ def main_loop():
         screen_brightness = max(min(screen_brightness, 100), 0)
         sbc.set_brightness(screen_brightness)
 
-        # Display the current screen brightness
-        cv2.putText(
-            frame,
-            f"Screen Brightness: {screen_brightness}",
-            (10, 30),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.8,
-            (0, 0, 255),
-            2,
-        )
-
-        # Display the 'Press q to exit' instruction
-        cv2.putText(
-            frame,
-            "Press q to exit",
-            (10, 60),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.8,
-            (0, 0, 255),
-            2,
-        )
-
-        # Display the camera frame
-        cv2.imshow("frame", frame)
-
-        # Exit if the 'q' key is pressed
-        if cv2.waitKey(1) == ord("q"):
-            exit_program()
-
         root.after(100, main_loop)
 
 root.after(100, main_loop)
