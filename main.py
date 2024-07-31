@@ -154,10 +154,24 @@ def main():
                     high_brightness = float(line.split("=")[1].strip())
         logging.info("Calibration data loaded.")
 
+    def center_window(window, width, height):
+        screen_width = window.winfo_screenwidth()
+        screen_height = window.winfo_screenheight()
+
+        x = (screen_width // 2) - (width // 2)
+        y = (screen_height // 2) - (height // 2)
+
+        window.geometry(f"{width}x{height}+{x}+{y}")
+
+
     # Create the Tkinter GUI with ThemedTk
     root = ThemedTk(theme="black")
     root.title("Adaptive Brightness Control Calibration")
-    root.geometry("400x250")  # Increased the window width to 400 pixels
+    window_width = 400
+    window_height = 250
+    root.geometry(f"{window_width}x{window_height}")  # Set the initial size
+    center_window(root, window_width, window_height)  # Center the window
+
 
     # Set window icon
     root.iconbitmap("icon.ico")
