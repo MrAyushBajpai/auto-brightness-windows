@@ -1,3 +1,6 @@
+opencv-python
 numpy
-opencv_python
+Pillow
+pystray
 screen_brightness_control
+ttkthemes
