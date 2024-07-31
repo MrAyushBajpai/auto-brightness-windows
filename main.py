@@ -31,17 +31,34 @@ def hide_to_tray():
     root.withdraw()
     create_tray_icon()
 
-def restore_from_tray(icon, item):
-    icon.stop()
+def restore_from_tray(icon):
+    logging.info("Restoring window from tray")
     root.deiconify()
+    icon.stop()  # Stop the icon when restoring
+
+def default_function(icon, item):
+    logging.info("Default function triggered")
+    restore_from_tray(icon)
 
 def on_exit(icon, item):
     exit_program(icon)
 
 def create_tray_icon():
-    image = Image.open("icon.ico")
-    menu = (item('Restore', restore_from_tray), item('Exit', on_exit))
-    icon = pystray.Icon("name", image, "Adaptive Brightness Control", menu)
+    image = Image.open("icon.ico")  # Ensure this path is correct
+    icon = pystray.Icon(
+        name="exampleapp",
+        icon=image,
+        title="Example",
+        menu=pystray.Menu(
+            pystray.MenuItem(text="Left-Click-Action", action=default_function, default=True),
+            pystray.MenuItem(text="Other option", action=lambda icon, item: logging.info("Other option selected"))
+        )
+    )
+    
+    # Override the left-click behavior to trigger the default function
+    icon.on_left_click = lambda: default_function(icon, None)
+    
+    # Start the tray icon on a separate thread
     icon_thread = threading.Thread(target=icon.run)
     icon_thread.start()
     return icon_thread
