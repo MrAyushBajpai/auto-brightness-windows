@@ -3,17 +3,52 @@ import numpy as np
 import screen_brightness_control as sbc
 import os
 import logging
+from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from ttkthemes import ThemedTk
-from PIL import Image
+from PIL import Image, ImageTk
 import pystray
 from pystray import MenuItem as item
 import threading
 import sys
+import ctypes
+
+# Global flag to indicate whether the application is running
+running = True
+
+def exit_program(icon=None, item=None):
+    global running
+    running = False
+    if icon:
+        icon.stop()
+    root.quit()
+    root.destroy()
+    sys.exit()  # Ensure the script exits
+
+def hide_to_tray():
+    root.withdraw()
+    create_tray_icon()
+
+def restore_from_tray(icon, item):
+    icon.stop()
+    root.deiconify()
+
+def on_exit(icon, item):
+    exit_program(icon)
+
+def create_tray_icon():
+    image = Image.open("icon.ico")
+    menu = (item('Restore', restore_from_tray), item('Exit', on_exit))
+    icon = pystray.Icon("name", image, "Adaptive Brightness Control", menu)
+    icon_thread = threading.Thread(target=icon.run)
+    icon_thread.start()
+    return icon_thread
 
 def main():
+    global root, cap
+
     # Set up logging
     log_file = "log.txt"
     logging.basicConfig(
@@ -71,11 +106,6 @@ def main():
         calibrate_high_brightness()
         save_calibration_data()
 
-    def exit_program():
-        global running
-        running = False
-        root.destroy()
-
     # Clear log file if its size is larger than 1 MB
     clear_large_log_file(log_file, 1024 * 1024)
 
@@ -114,7 +144,7 @@ def main():
     # Create the Tkinter GUI with ThemedTk
     root = ThemedTk(theme="black")
     root.title("Adaptive Brightness Control Calibration")
-    root.geometry("400x200")  # Increased the window width to 400 pixels
+    root.geometry("400x250")  # Increased the window width to 400 pixels
 
     # Set window icon
     root.iconbitmap("icon.ico")
@@ -126,12 +156,14 @@ def main():
     frame.pack(fill=tk.BOTH, expand=True)
 
     calibrate_button = ttk.Button(frame, text="Start Calibration", command=start_calibration)
-    calibrate_button.pack(pady=20, fill=tk.X)
+    calibrate_button.pack(pady=10, fill=tk.X)
 
-    exit_button = ttk.Button(frame, text="Exit", command=exit_program)
-    exit_button.pack(pady=20, fill=tk.X)
+    hide_button = ttk.Button(frame, text="Hide to Tray", command=hide_to_tray)
+    hide_button.pack(pady=10, fill=tk.X)
 
-    running = True
+    exit_button = ttk.Button(frame, text="Exit", command=lambda: exit_program(None, None))
+    exit_button.pack(pady=10, fill=tk.X)
+
     def main_loop():
         if running:
             # Read the camera frame
@@ -165,27 +197,8 @@ def main():
 
     root.after(100, main_loop)
 
-    # Function to minimize to tray
-    def minimize_to_tray():
-        root.withdraw()
-        create_tray_icon()
-
-    def restore_from_tray(icon, item):
-        icon.stop()
-        root.deiconify()
-
-    def on_exit(icon, item):
-        icon.stop()
-        exit_program()
-
-    def create_tray_icon():
-        image = Image.open("icon.ico")
-        menu = (item('Calibrate', restore_from_tray), item('Exit', on_exit))
-        icon = pystray.Icon("name", image, "Adaptive Brightness Control", menu)
-        threading.Thread(target=icon.run).start()
-
     # Override the close button to minimize to tray
-    root.protocol("WM_DELETE_WINDOW", minimize_to_tray)
+    root.protocol("WM_DELETE_WINDOW", hide_to_tray)
 
     root.mainloop()
 
@@ -209,3 +222,4 @@ if __name__ == "__main__":
         logging.error("Exception occurred", exc_info=True)
         messagebox.showerror("Error", f"An error occurred: {str(e)}")
         input("Press Enter to exit...")
+        sys.exit()
