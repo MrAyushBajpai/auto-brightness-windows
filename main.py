@@ -3,22 +3,19 @@ import numpy as np
 import screen_brightness_control as sbc
 import os
 import logging
-from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from ttkthemes import ThemedTk
-from PIL import Image, ImageTk
+from PIL import Image
 import pystray
-from pystray import MenuItem as item
 import threading
 import sys
-import ctypes
 
 # Global flag to indicate whether the application is running
 running = True
 
-def exit_program(icon=None, item=None):
+def exit_program(icon=None):
     global running
     running = False
     if icon:
@@ -36,22 +33,21 @@ def restore_from_tray(icon):
     root.deiconify()
     icon.stop()  # Stop the icon when restoring
 
-def default_function(icon, item):
+def default_function(icon):
     logging.info("Default function triggered")
     restore_from_tray(icon)
 
-def on_exit(icon, item):
+def on_exit(icon):
     exit_program(icon)
 
 def create_tray_icon():
     image = Image.open("icon.ico")  # Ensure this path is correct
     icon = pystray.Icon(
-        name="exampleapp",
+        name="Adaptive Brightness Control",
         icon=image,
-        title="Example",
+        title="Adaptive Brightness Control",
         menu=pystray.Menu(
-            pystray.MenuItem(text="Left-Click-Action", action=default_function, default=True),
-            pystray.MenuItem(text="Other option", action=lambda icon, item: logging.info("Other option selected"))
+            pystray.MenuItem(text="Launch App", action=default_function, default=True)
         )
     )
     
@@ -178,7 +174,7 @@ def main():
     hide_button = ttk.Button(frame, text="Hide to Tray", command=hide_to_tray)
     hide_button.pack(pady=10, fill=tk.X)
 
-    exit_button = ttk.Button(frame, text="Exit", command=lambda: exit_program(None, None))
+    exit_button = ttk.Button(frame, text="Exit", command=lambda: exit_program(None))
     exit_button.pack(pady=10, fill=tk.X)
 
     def main_loop():
