@@ -10,6 +10,7 @@ from ttkthemes import ThemedTk
 from PIL import Image
 import pystray
 import threading
+import webbrowser
 import sys
 
 # Global flag to indicate whether the application is running
@@ -192,6 +193,19 @@ def main():
 
     exit_button = ttk.Button(frame, text="Exit", command=lambda: exit_program(None))
     exit_button.pack(pady=10, fill=tk.X)
+
+    def open_github_link(event):
+        webbrowser.open("https://github.com/MrAyushBajpai/auto-brightness-windows")
+
+    bottom_frame = ttk.Frame(root)
+    bottom_frame.pack(side=tk.BOTTOM, fill=tk.X)
+
+    footer_label = tk.Label(bottom_frame, text="Designed with love by Ayush Bajpai. ", fg="white", bg="#424242")
+    footer_label.pack(anchor=tk.CENTER)
+
+    github_link = tk.Label(bottom_frame, text="GitHub", fg="#0096FF", bg="#424242", cursor="hand2")
+    github_link.pack(anchor=tk.CENTER)
+    github_link.bind("<Button-1>", open_github_link)
 
     def main_loop():
         if running:
