@@ -12,6 +12,7 @@ from PIL import Image, ImageTk
 import pystray
 from pystray import MenuItem as item
 import threading
+import sys
 
 def main():
     # Set up logging
@@ -56,7 +57,7 @@ def main():
         high_brightness = np.mean(gray)
         logging.info("High brightness calibrated to: %f", high_brightness)
         calibration_data_updated = True
-        messagebox.showinfo("Calibration", f"High brightness calibrated to: %f", high_brightness)
+        messagebox.showinfo("Calibration", f"High brightness calibrated to: {high_brightness:.2f}")
 
     def save_calibration_data():
         with open(calibration_file, "w") as f:
@@ -111,20 +112,13 @@ def main():
                     high_brightness = float(line.split("=")[1].strip())
         logging.info("Calibration data loaded.")
 
-    # Convert icon.png to icon.ico
-    icon_path = "icon.png"
-    icon_ico_path = "icon.ico"
-    if not os.path.exists(icon_ico_path):
-        img = Image.open(icon_path)
-        img.save(icon_ico_path)
-
     # Create the Tkinter GUI with ThemedTk
     root = ThemedTk(theme="black")
     root.title("Adaptive Brightness Control Calibration")
     root.geometry("400x200")  # Increased the window width to 400 pixels
 
     # Set window icon
-    root.iconbitmap(icon_ico_path)
+    root.iconbitmap("icon.ico")
 
     style = ttk.Style()
     style.configure('TButton', font=('Helvetica', 12), padding=10)
@@ -163,8 +157,11 @@ def main():
 
             # Adjust the screen brightness within the valid range (0-100)
             screen_brightness = max(min(screen_brightness, 100), 0)
-            sbc.set_brightness(screen_brightness)
-
+            try:
+                sbc.set_brightness(screen_brightness)
+            except sbc.ScreenBrightnessError as e:
+                logging.error("Failed to set screen brightness: %s", str(e))
+            
             root.after(100, main_loop)
 
     root.after(100, main_loop)
@@ -183,7 +180,7 @@ def main():
         exit_program()
 
     def create_tray_icon():
-        image = Image.open("icon.png")
+        image = Image.open("icon.ico")
         menu = (item('Calibrate', restore_from_tray), item('Exit', on_exit))
         icon = pystray.Icon("name", image, "Adaptive Brightness Control", menu)
         threading.Thread(target=icon.run).start()
