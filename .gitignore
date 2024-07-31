@@ -1,2 +1,5 @@
 brightness_calibration.txt
 log.txt
+build
+dist
+main.spec
