@@ -113,7 +113,7 @@ else:
 # Create the Tkinter GUI with ThemedTk
 root = ThemedTk(theme="black")
 root.title("Adaptive Brightness Control Calibration")
-root.geometry("300x200")
+root.geometry("500x200")
 
 # Set window icon
 root.iconbitmap("icon.ico")
