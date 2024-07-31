@@ -3,12 +3,11 @@ import numpy as np
 import screen_brightness_control as sbc
 import os
 import logging
-from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from ttkthemes import ThemedTk
-from PIL import Image, ImageTk
+from PIL import Image
 import pystray
 from pystray import MenuItem as item
 import threading
