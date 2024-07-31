@@ -6,6 +6,10 @@ import logging
 from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox
+from PIL import Image, ImageTk
+import pystray
+from pystray import MenuItem as item
+import threading
 
 # Set up logging
 log_file = "log.txt"
@@ -17,7 +21,7 @@ def clear_large_log_file(log_path, max_size_in_bytes):
     """Clear the log file if its size exceeds the specified limit."""
     try:
         log_size = os.path.getsize(log_path)
-        if log_size > max_size_in_bytes:
+        if (log_size > max_size_in_bytes):
             open(log_path, "w").close()
             logging.info("Log file cleared due to large size")
     except Exception as e:
@@ -144,6 +148,29 @@ def main_loop():
         root.after(100, main_loop)
 
 root.after(100, main_loop)
+
+# Function to minimize to tray
+def minimize_to_tray():
+    root.withdraw()
+    create_tray_icon()
+
+def restore_from_tray(icon, item):
+    icon.stop()
+    root.deiconify()
+
+def on_exit(icon, item):
+    icon.stop()
+    exit_program()
+
+def create_tray_icon():
+    image = Image.open("icon.png")
+    menu = (item('Calibrate', restore_from_tray), item('Exit', on_exit))
+    icon = pystray.Icon("name", image, "Adaptive Brightness Control", menu)
+    threading.Thread(target=icon.run).start()
+
+# Override the close button to minimize to tray
+root.protocol("WM_DELETE_WINDOW", minimize_to_tray)
+
 root.mainloop()
 
 # Log whether default, previous, or new data was used
