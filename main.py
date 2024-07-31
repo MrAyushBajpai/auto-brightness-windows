@@ -6,6 +6,8 @@ import logging
 from datetime import datetime
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
+from ttkthemes import ThemedTk
 from PIL import Image, ImageTk
 import pystray
 from pystray import MenuItem as item
@@ -21,7 +23,7 @@ def clear_large_log_file(log_path, max_size_in_bytes):
     """Clear the log file if its size exceeds the specified limit."""
     try:
         log_size = os.path.getsize(log_path)
-        if (log_size > max_size_in_bytes):
+        if log_size > max_size_in_bytes:
             open(log_path, "w").close()
             logging.info("Log file cleared due to large size")
     except Exception as e:
@@ -108,15 +110,25 @@ else:
                 high_brightness = float(line.split("=")[1].strip())
     logging.info("Calibration data loaded.")
 
-# Create the Tkinter GUI
-root = tk.Tk()
+# Create the Tkinter GUI with ThemedTk
+root = ThemedTk(theme="black")
 root.title("Adaptive Brightness Control Calibration")
+root.geometry("300x200")
 
-calibrate_button = tk.Button(root, text="Start Calibration", command=start_calibration)
-calibrate_button.pack(pady=20)
+# Set window icon
+root.iconbitmap("icon.ico")
 
-exit_button = tk.Button(root, text="Exit", command=exit_program)
-exit_button.pack(pady=20)
+style = ttk.Style()
+style.configure('TButton', font=('Helvetica', 12), padding=10)
+
+frame = ttk.Frame(root, padding="10")
+frame.pack(fill=tk.BOTH, expand=True)
+
+calibrate_button = ttk.Button(frame, text="Start Calibration", command=start_calibration)
+calibrate_button.pack(pady=20, fill=tk.X)
+
+exit_button = ttk.Button(frame, text="Exit", command=exit_program)
+exit_button.pack(pady=20, fill=tk.X)
 
 running = True
 def main_loop():
@@ -163,7 +175,7 @@ def on_exit(icon, item):
     exit_program()
 
 def create_tray_icon():
-    image = Image.open("icon.png")
+    image = Image.open("icon.ico")
     menu = (item('Calibrate', restore_from_tray), item('Exit', on_exit))
     icon = pystray.Icon("name", image, "Adaptive Brightness Control", menu)
     threading.Thread(target=icon.run).start()
