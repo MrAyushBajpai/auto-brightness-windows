@@ -170,7 +170,7 @@ def main():
     root.title("Adaptive Brightness Control Calibration")
 
     window_width = 400
-    window_height = 450
+    window_height = 350
     root.geometry(f"{window_width}x{window_height}")  # Set the initial size
     center_window(root, window_width, window_height)  # Center the window
 
@@ -203,50 +203,12 @@ def main():
             auto_button.config(text="Resume Auto Mode")
             logging.info("Auto brightness paused")
 
-            # Night Mode toggle
-    is_dark_mode = False  # Tracks whether night mode is active
-
-    def toggle_night_mode():
-
-        nonlocal is_dark_mode  # So the function can change the outer variable
-        if is_dark_mode:
-            # Switch to Light Mode
-            root.configure(bg="white")
-            footer_label.config(bg="#424242", fg="white")
-            github_link.config(bg="#424242", fg="#0096FF")
-            for widget in frame.winfo_children():
-                try:
-                    widget.configure(style='TButton')
-                except:
-                    pass
-            is_dark_mode = False
-            logging.info("Switched to light mode")
-        else:
-            # Switch to Night Mode
-            root.configure(bg="#1e1e1e")
-            footer_label.config(bg="#1e1e1e", fg="white")
-            github_link.config(bg="#1e1e1e", fg="#4aa3ff")
-            for widget in frame.winfo_children():
-                try:
-                    widget.configure(style='Dark.TButton')
-                except:
-                    pass
-            is_dark_mode = True
-            logging.info("Switched to night mode")
-    
-
+        
     auto_button = ttk.Button(frame, text="Pause Auto Mode", command=toggle_auto_mode)
     auto_button.pack(pady=10, fill=tk.X)
     # --- NEW CODE END ---
 
-    auto_button = ttk.Button(frame, text="Pause Auto Mode", command=toggle_auto_mode)
-    auto_button.pack(pady=10, fill=tk.X)
-
-    style.configure('Dark.TButton', font=('Helvetica', 12), padding=10, background='#333333', foreground='white')
-    night_button = ttk.Button(frame, text="Night Mode", command=toggle_night_mode)
-    night_button.pack(pady=10, fill=tk.X)
-
-
+    
     exit_button = ttk.Button(frame, text="Exit", command=lambda: exit_program(None))
     exit_button.pack(pady=10, fill=tk.X)
 
