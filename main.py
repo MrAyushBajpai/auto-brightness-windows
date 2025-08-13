@@ -15,6 +15,7 @@ import sys
 
 # Global flag to indicate whether the application is running
 running = True
+auto_mode = True
 
 def exit_program(icon=None):
     global running
@@ -169,7 +170,7 @@ def main():
     root.title("Adaptive Brightness Control Calibration")
 
     window_width = 400
-    window_height = 250
+    window_height = 350
     root.geometry(f"{window_width}x{window_height}")  # Set the initial size
     center_window(root, window_width, window_height)  # Center the window
 
@@ -191,6 +192,23 @@ def main():
     hide_button = ttk.Button(frame, text="Hide to Tray", command=hide_to_tray)
     hide_button.pack(pady=10, fill=tk.X)
 
+# --- NEW CODE START ---
+    def toggle_auto_mode():
+        global auto_mode
+        auto_mode = not auto_mode
+        if auto_mode:
+            auto_button.config(text="Pause Auto Mode")
+            logging.info("Auto brightness resumed")
+        else:
+            auto_button.config(text="Resume Auto Mode")
+            logging.info("Auto brightness paused")
+
+        
+    auto_button = ttk.Button(frame, text="Pause Auto Mode", command=toggle_auto_mode)
+    auto_button.pack(pady=10, fill=tk.X)
+    # --- NEW CODE END ---
+
+    
     exit_button = ttk.Button(frame, text="Exit", command=lambda: exit_program(None))
     exit_button.pack(pady=10, fill=tk.X)
 
@@ -200,7 +218,7 @@ def main():
     bottom_frame = ttk.Frame(root)
     bottom_frame.pack(side=tk.BOTTOM, fill=tk.X)
 
-    footer_label = tk.Label(bottom_frame, text="Designed with love by Ayush Bajpai. ", fg="white", bg="#424242")
+    footer_label = tk.Label(bottom_frame, text="Designed by Anjali Shakya. ", fg="white", bg="#424242")
     footer_label.pack(anchor=tk.CENTER)
 
     github_link = tk.Label(bottom_frame, text="GitHub", fg="#0096FF", bg="#424242", cursor="hand2")
@@ -209,6 +227,13 @@ def main():
 
     def main_loop():
         if running:
+            # new code start here
+            if not auto_mode:
+                # Skip brightness adjustment if paused
+                root.after(100, main_loop)
+                return
+               # new code end here
+
             # Read the camera frame
             ret, frame = cap.read()
             if not ret:
